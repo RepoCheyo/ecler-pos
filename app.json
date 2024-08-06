@@ -1,30 +1,29 @@
 {
   "expo": {
-    "name": "ecler",
-    "slug": "ecler",
+    "name": "Ecler",
+    "slug": "Ecler",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/_0c57048d-6f1e-4332-92c9-df14e4be1cea-removebg-preview.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "image": "./src/assets/_0c57048d-6f1e-4332-92c9-df14e4be1cea-removebg-preview.png"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cheyo.ecler"
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+    "extra": {
+      "eas": {
+        "projectId": "680623d4-81af-40a8-a3be-be935eeb1643"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "android": {
+      "package": "com.cheyo.ecler"
     }
   }
 }
