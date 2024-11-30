@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -18,6 +19,8 @@ import {
 import { DbContext } from '../utils/dbContext';
 import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/native';
+import { scale } from 'react-native-size-matters';
+import colors from '../styles/colors';
 
 export default function AddExpense() {
   const { db } = useContext(DbContext);
@@ -84,7 +87,7 @@ export default function AddExpense() {
       </Text>
 
       {acc.length > 0 ? (
-        <>
+        <ScrollView>
           <View
             style={{
               top: verticalScale(30),
@@ -114,9 +117,8 @@ export default function AddExpense() {
             style={{
               top: verticalScale(25),
               width: horizontalScale(150),
-              height: verticalScale(30),
               borderWidth: 2,
-              padding: moderateScale(3),
+              padding: moderateScale(5),
               borderColor: 'lightgray',
               borderRadius: moderateScale(10),
               justifyContent: 'center',
@@ -161,9 +163,8 @@ export default function AddExpense() {
             style={{
               top: verticalScale(25),
               width: horizontalScale(150),
-              height: verticalScale(30),
-              padding: moderateScale(3),
               borderWidth: 2,
+              padding: moderateScale(5),
               borderColor: 'lightgray',
               borderRadius: moderateScale(10),
               justifyContent: 'center',
@@ -180,6 +181,19 @@ export default function AddExpense() {
               keyboardType="numeric"
             />
           </View>
+
+          {accsAmount < amount && (
+            <Text
+              style={{
+                color: colors.danger,
+                marginTop: scale(15),
+                marginLeft: scale(10),
+                fontWeight: 900,
+              }}
+            >
+              No puedes agregar ya que el monto es mayor al saldo de la cuenta
+            </Text>
+          )}
 
           <View
             style={{
@@ -252,6 +266,7 @@ export default function AddExpense() {
           <View
             style={{
               top: verticalScale(20),
+              paddingBottom: scale(20),
               width: '100%',
             }}
           >
@@ -307,8 +322,6 @@ export default function AddExpense() {
                 height: verticalScale(70),
                 width: '95%',
                 backgroundColor: 'black',
-                bottom: verticalScale(20),
-                position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 20,
@@ -329,7 +342,7 @@ export default function AddExpense() {
               </Text>
             </TouchableOpacity>
           )}
-        </>
+        </ScrollView>
       ) : (
         <View
           style={{

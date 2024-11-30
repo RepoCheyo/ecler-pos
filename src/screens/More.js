@@ -1,14 +1,10 @@
 import { Alert, FlatList, Text, View } from 'react-native';
 import React, { useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  horizontalScale,
-  verticalScale,
-  moderateScale,
-} from '../utils/dimensions';
 import SettingsItem from '../components/more/settingsItem';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { moderateScale, scale } from 'react-native-size-matters';
 
 export default function More() {
   const navigation = useNavigation();
@@ -33,12 +29,12 @@ export default function More() {
     >
       <View
         style={{
-          padding: moderateScale(20),
+          padding: scale(20),
         }}
       >
         <Text
           style={{
-            fontSize: moderateScale(25),
+            fontSize: scale(25),
             fontWeight: 400,
           }}
         >
@@ -46,7 +42,7 @@ export default function More() {
         </Text>
         <Text
           style={{
-            fontSize: moderateScale(35),
+            fontSize: scale(35),
             fontWeight: 900,
           }}
         >
@@ -61,16 +57,16 @@ export default function More() {
             flexDirection: 'row',
             padding: moderateScale(10),
             alignItems: 'flex-start',
-            left: verticalScale(10),
-            marginTop: verticalScale(30),
+            left: scale(10),
+            marginTop: scale(30),
           }}
         >
-          <FontAwesome5 name="store" size={30} color="lightgreen" />
+          <FontAwesome5 name="store" size={scale(25)} color="lightgreen" />
           <Text
             style={{
               fontWeight: 600,
-              fontSize: moderateScale(25),
-              left: horizontalScale(8),
+              fontSize: scale(25),
+              left: scale(8),
             }}
           >
             Tienda

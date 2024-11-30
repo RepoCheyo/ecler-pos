@@ -60,7 +60,11 @@ const HistoryNav = () => {
 const BottomNav = () => {
   return (
     <BottomTab.Navigator
-      screenOptions={{ tabBarActiveTintColor: '#e36414', headerShown: false }}
+      screenOptions={{
+        tabBarActiveTintColor: '#e36414',
+        headerShown: false,
+        tabBarPosition: 'left',
+      }}
     >
       <BottomTab.Screen
         name="Inicio"
@@ -119,42 +123,42 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Accounts"
           component={Accounts}
-          options={{ headerShown: false }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="Clients"
           component={Clients}
-          options={{ headerShown: false }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="AddProduct"
           component={AddProduct}
-          options={{ headerShown: false, presentation: 'modal' }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="EditProduct"
           component={EditProduct}
-          options={{ headerShown: false, presentation: 'modal' }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="AddSale"
           component={AddSale}
-          options={{ headerShown: false }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="SaleDetail"
           component={SaleDetail}
-          options={{ headerShown: false, presentation: 'modal' }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="AddExpense"
           component={AddExpense}
-          options={{ headerShown: false }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
         <Stack.Screen
           name="ExpenseDetail"
           component={ExpenseDetail}
-          options={{ headerShown: false, presentation: 'modal' }}
+          options={{ headerTitle: '', headerBackTitleVisible: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

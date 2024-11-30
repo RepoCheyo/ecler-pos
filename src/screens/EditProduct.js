@@ -12,7 +12,10 @@ import { DbContext } from '../utils/dbContext';
 import { useNavigation } from '@react-navigation/native';
 import { verticalScale, moderateScale } from '../utils/dimensions';
 import { Entypo } from '@expo/vector-icons';
+import uuid from 'react-native-uuid';
+
 import SaveBtn from '../components/history/SaveBtn';
+import colors from '../styles/colors';
 
 export default function EditProduct({ route }) {
   const { db } = useContext(DbContext);
@@ -42,8 +45,15 @@ export default function EditProduct({ route }) {
             setName(prod.name);
             setSize(prod.option);
             setValue(prod.price);
-            flavor.push(JSON.parse(prod.flavors));
-            setFlavor(flavor[0]);
+            // flavor.push(JSON.parse(prod.flavors));
+            // setFlavor(flavor[0]);
+          }
+        );
+        tx.executeSql(
+          'SELECT * FROM flavors WHERE prod_id=?',
+          [prod_id],
+          (queryRes, resSet) => {
+            setFlavor(resSet.rows._array);
           }
         );
       });
@@ -60,21 +70,101 @@ export default function EditProduct({ route }) {
     setFlaName('');
     setFlaQty('');
 
+    let flavId = uuid.v4();
+
+    db.transaction((tx) => {
+      tx.executeSql(
+        'INSERT INTO flavors(flavor_id, prod_id, name, qty) values (?, ?, ?, ?)',
+        [flavId, prod_id, flavName, qty]
+      );
+    });
+    navigation.navigate('Almacen');
+
     flavor.push({
-      id: flavor.length + 1,
+      id: flavor.length + 1 || flavor.flavor_id,
       name: flavName,
       qty: qty,
     });
   };
 
-  const updateProd = (name, size, price, flavor) => {
-    let flavorsString = JSON.stringify(flavor);
+  const dltProdDb = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql('DELETE FROM flavors WHERE flavor_id=(?)', [id]);
+    });
+    navigation.navigate('Almacen');
+  };
 
+  const dltFlav = (flav) => {
+    Alert.alert(
+      'Eliminar sabor',
+      `Esta seguro de eliminar ${flav.name} esto afectara a las ventas registradas con este sabor`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: () => dltProdDb(flav.flavor_id),
+        },
+      ]
+    );
+  };
+
+  const editFlavNameDb = (id, name) => {
+    db.transaction((tx) => {
+      tx.executeSql('UPDATE flavors SET name=? WHERE flavor_id=?', [name, id]);
+    });
+    navigation.navigate('Almacen');
+  };
+
+  const editFlavName = (flav) => {
+    Alert.prompt(
+      'Cambiar sabor',
+      `Esta seguro de cambiar el nombre de ${flav.name}`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          onPress: (name) => editFlavNameDb(flav.flavor_id, name.trim()),
+        },
+      ]
+    );
+  };
+
+  const editFlavQtyDb = (id, qty) => {
+    db.transaction((tx) => {
+      tx.executeSql('UPDATE flavors SET qty=? WHERE flavor_id=?', [qty, id]);
+    });
+    navigation.navigate('Almacen');
+  };
+
+  const editFlavQty = (flav) => {
+    Alert.prompt(
+      'Cambiar sabor',
+      `Esta seguro de cambiar el stock de ${flav.name}`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          onPress: (qty) => editFlavQtyDb(flav.flavor_id, parseInt(qty)),
+        },
+      ]
+    );
+  };
+
+  const updateProd = (name, size, price, flavor) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          'UPDATE stock SET name=?, option=?, price=?, flavors=? WHERE prod_id=?',
-          [name, size, price, flavorsString, prod_id]
+          'UPDATE stock SET name=?, option=?, price=? WHERE prod_id=?',
+          [name, size, price, prod_id]
         );
       });
 
@@ -83,10 +173,6 @@ export default function EditProduct({ route }) {
       console.log(error);
     }
   };
-
-  // const isFormValid = useMemo(() => {
-  //   return flavName.length > 0 && flavQty.length > 0;
-  // }, [flavName, flavQty]);
 
   const isFlavForm = useMemo(() => {
     return flavName.length > 0 && flavQty.length > 0;
@@ -225,18 +311,34 @@ export default function EditProduct({ route }) {
                 justifyContent: 'space-around',
                 width: '100%',
               }}
-              key={item.id}
+              key={item.flavor_id}
               onPress={() => {
-                setFlaName(item.name), setFlaQty(item.qty);
+                setFlaName(item.name), setFlaQty(item.qty.toString());
               }}
             >
               <Text>{item.name}</Text>
               <Text>{item.qty}</Text>
-              <TouchableOpacity
-                onPress={() =>
-                  setFlavor(flavor.filter((a) => a.id !== item.id))
-                }
-              >
+              <TouchableOpacity onPress={() => editFlavName(item)}>
+                <Text
+                  style={{
+                    fontWeight: 800,
+                    color: colors.primary,
+                  }}
+                >
+                  Editar nombre
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => editFlavQty(item)}>
+                <Text
+                  style={{
+                    fontWeight: 800,
+                    color: colors.primary,
+                  }}
+                >
+                  Editar stock
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => dltFlav(item)}>
                 <Entypo name="trash" size={24} color="red" />
               </TouchableOpacity>
             </TouchableOpacity>

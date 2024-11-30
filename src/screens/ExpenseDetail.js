@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, Button } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { DbContext } from '../utils/dbContext';
 import {
@@ -8,6 +8,7 @@ import {
 } from '../utils/dimensions';
 import { FontAwesome5, Entypo, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { scale } from 'react-native-size-matters';
 
 export default function ExpenseDetail({ route }) {
   const { db } = useContext(DbContext);
@@ -30,6 +31,35 @@ export default function ExpenseDetail({ route }) {
     });
   };
 
+  const deleteExpense = (expenseId) => {
+    db.transaction((tx) => {
+      // Step 1: Fetch the expense details
+      tx.executeSql(
+        'SELECT * FROM expenses WHERE expense_id = ?',
+        [expenseId],
+        (tx, result) => {
+          if (result.rows.length > 0) {
+            const expense = result.rows.item(0);
+            const { amount, account } = expense;
+
+            // Step 2: Refund the amount to the account
+            tx.executeSql(
+              'UPDATE accounts SET amount = amount + ? WHERE name = ?',
+              [amount, account]
+            );
+
+            // Step 3: Delete the expense
+            tx.executeSql('DELETE FROM expenses WHERE expense_id = ?', [
+              expenseId,
+            ]);
+          }
+        }
+      );
+    });
+
+    navigation.navigate('Historial');
+  };
+
   useEffect(() => {
     getExpense(expense_id);
   }, []);
@@ -44,27 +74,27 @@ export default function ExpenseDetail({ route }) {
           alignItems: 'center',
         }}
       >
-        <View>
-          <Text
-            style={{
-              fontSize: moderateScale(18),
-              fontWeight: '900',
-              top: verticalScale(20),
-              padding: moderateScale(10),
+        <Text
+          style={{
+            fontSize: moderateScale(18),
+            fontWeight: '900',
+            top: verticalScale(20),
+            padding: moderateScale(10),
+          }}
+        >
+          Resumen de gasto
+        </Text>
+        <View
+          style={{
+            padding: scale(5),
+          }}
+        >
+          <Button
+            onPress={() => {
+              deleteExpense(expense_id);
             }}
-          >
-            Resumen de gasto
-          </Text>
-
-          <Text
-            style={{
-              fontSize: moderateScale(7),
-              left: horizontalScale(7),
-              top: verticalScale(10),
-            }}
-          >
-            {expense.expense_id}
-          </Text>
+            title="Eliminar gasto"
+          />
         </View>
       </View>
 

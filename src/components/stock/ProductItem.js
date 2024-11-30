@@ -6,6 +6,7 @@ import {
   moderateScale,
 } from '../../utils/dimensions';
 import FlavorItem from './FlavorItem';
+import { scale } from 'react-native-size-matters';
 
 export default function ProductItem({
   id,
@@ -19,14 +20,13 @@ export default function ProductItem({
   return (
     <View
       style={{
-        width: horizontalScale(350),
+        width: '100%',
         backgroundColor: 'white',
         alignSelf: 'center',
         padding: moderateScale(10),
         borderRadius: moderateScale(15),
         overflow: 'hidden',
         marginBottom: moderateScale(15),
-        top: verticalScale(55),
       }}
     >
       <View
@@ -97,14 +97,14 @@ export default function ProductItem({
 
         <TouchableOpacity
           style={{
-            height: verticalScale(50),
-            width: horizontalScale(330),
+            height: scale(30),
+            width: '100%',
             top: verticalScale(2),
-            backgroundColor: '#0095f6',
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
             borderRadius: 15,
+            backgroundColor: '#0095f6',
           }}
           onPress={onPressEdit}
         >
@@ -120,15 +120,15 @@ export default function ProductItem({
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            height: verticalScale(50),
-            width: horizontalScale(330),
+            height: scale(30),
+            width: '100%',
             top: verticalScale(10),
-            backgroundColor: '#F5F5F5',
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
             borderRadius: 15,
             marginBottom: verticalScale(10),
+            backgroundColor: '#F5F5F5',
           }}
           onPress={onPressDlt}
         >

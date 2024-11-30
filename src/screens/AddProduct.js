@@ -45,14 +45,23 @@ export default function AddProduct() {
   const saveProd = (name, size, price, flavor) => {
     let prodId = uuid.v4();
 
-    let flavorsString = JSON.stringify(flavor);
-
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          'INSERT INTO stock(prod_id, name, option, price, flavors) values (?, ?, ?, ?, ?)',
-          [prodId, name, size, price, flavorsString]
+          'INSERT INTO stock(prod_id, name, option, price) values (?, ?, ?, ?)',
+          [prodId, name, size, price]
         );
+      });
+
+      flavor.forEach((element) => {
+        let flavId = uuid.v4();
+
+        db.transaction((tx) => {
+          tx.executeSql(
+            'INSERT INTO flavors(flavor_id, prod_id, name, qty) values (?, ?, ?, ?)',
+            [flavId, prodId, element.name, element.qty]
+          );
+        });
       });
 
       navigation.navigate('Almacen');
@@ -62,8 +71,8 @@ export default function AddProduct() {
   };
 
   const isFormValid = useMemo(() => {
-    return name.length > 0 && !size === '' && value.length && flavor.length > 0;
-  }, [name, size, value, flavor]);
+    return name.length > 0 && size.length && value.length;
+  }, [name, size, value]);
 
   const isFlavForm = useMemo(() => {
     return flavName.length > 0 && flavQty.length > 0;

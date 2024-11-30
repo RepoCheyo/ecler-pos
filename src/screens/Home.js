@@ -9,6 +9,10 @@ import {
 } from '../utils/dimensions';
 import { useNavigation } from '@react-navigation/native';
 import { DbContext } from '../utils/dbContext';
+import Holder from '../components/shared/main-cont';
+import Card from '../components/shared/card';
+import { scale } from 'react-native-size-matters';
+import typography from '../styles/typography';
 
 export default function Home() {
   const { db } = useContext(DbContext);
@@ -20,10 +24,7 @@ export default function Home() {
   const [totalSales, setTotalSales] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalProds, setTotalProds] = useState(0);
-
-  const [sls, setSls] = useState([]);
-  const [custs, setCusts] = useState([]);
-  const [prodSales, setProdSales] = useState([]);
+  const [totalProdsSales, setTotalProdsSales] = useState(0);
 
   const getTotalSales = () => {
     db.transaction((tx) => {
@@ -58,56 +59,11 @@ export default function Home() {
     });
   };
 
-  const getSalesByMonth = () => {
+  const getTotalProdsSales = () => {
     db.transaction((tx) => {
-      tx.executeSql(
-        'SELECT amount AS value, cust_name AS name FROM sales ORDER BY date DESC LIMIT 6',
-        null,
-        (queryRes, resSet) => {
-          let prodArr = resSet.rows._array;
-          setSls(prodArr);
-        }
-      );
-    });
-  };
-
-  const getClientSales = () => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        'SELECT cust_name AS label, count(*) AS value FROM  sales GROUP  BY cust_name ORDER  BY value DESC',
-        null,
-        (queryRes, resSet) => {
-          let qry = resSet.rows._array;
-          setCusts(qry);
-        }
-      );
-    });
-  };
-
-  const getSalesByProd = () => {
-    const arrByProdSale = [];
-    const result = [];
-
-    db.transaction((tx) => {
-      tx.executeSql('SELECT sale_det FROM sales', null, (queryRes, resSet) => {
-        let qry = resSet.rows._array;
-
-        qry.forEach((item) => {
-          let formatted = JSON.parse(item.sale_det);
-
-          arrByProdSale.push(formatted.prod);
-        });
-
-        const countMap = arrByProdSale.reduce((acc, label) => {
-          acc[label] = (acc[label] || 0) + 1;
-          return acc;
-        }, {});
-
-        for (const [label, value] of Object.entries(countMap)) {
-          result.push({ value, label });
-        }
-
-        setCusts(result);
+      tx.executeSql('SELECT * FROM sales', null, (queryRes, resSet) => {
+        let prodArr = resSet.rows._array;
+        setTotalProdsSales(prodArr.length);
       });
     });
   };
@@ -116,9 +72,7 @@ export default function Home() {
     getTotalSales();
     getTotalExpenses();
     getTotalProds();
-    getSalesByMonth();
-    getClientSales();
-    getSalesByProd();
+    getTotalProdsSales();
   };
 
   useEffect(() => {
@@ -133,209 +87,108 @@ export default function Home() {
         <RefreshControl refreshing={refreshing} onRefresh={matrixFunc} />
       }
     >
-      {totalSales > 0 ? (
-        <>
-          <View style={{ marginTop: verticalScale(60) }}>
-            <View
-              style={{
-                width: '95%',
-                height: verticalScale(80),
-                alignItems: 'center',
-                alignSelf: 'center',
-              }}
-            >
-              <StatsCard
-                title={'Ventas totales'}
-                text={'$' + totalSales}
-                cardWidth={'100%'}
-                textColor={'#03C03C'}
-                onPress={() =>
-                  navigation.navigate('Root', {
-                    screen: 'Historial',
-                    params: { screen: 'Ventas' },
-                  })
-                }
-              />
-            </View>
-
-            <View
-              style={{
-                width: '100%',
-                height: verticalScale(100),
-                alignItems: 'center',
-                top: verticalScale(10),
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-              }}
-            >
-              <StatsCard
-                title={'Gastos totales'}
-                text={'$' + totalExpenses}
-                textColor={'red'}
-                cardWidth={'45%'}
-                onPress={() =>
-                  navigation.navigate('Root', {
-                    screen: 'Historial',
-                    params: { screen: 'Gastos' },
-                  })
-                }
-              />
-              <StatsCard
-                title={'Productos en stock'}
-                text={totalProds}
-                textColor={'gray'}
-                cardWidth={'45%'}
-                onPress={() => navigation.navigate('Almacen')}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              marginTop: moderateScale(26),
-              marginLeft: horizontalScale(15),
-            }}
-          >
+      <Holder>
+        {totalSales > 0 ? (
+          <>
             <Text
               style={{
-                fontSize: moderateScale(22),
-                fontWeight: 800,
-                padding: moderateScale(8),
+                fontSize: moderateScale(50),
+                fontWeight: typography.fontWeight.black,
               }}
             >
-              Estadísticas
+              Inicio
             </Text>
-
             <View
               style={{
-                marginTop: verticalScale(10),
-                backgroundColor: 'white',
-                padding: moderateScale(15),
-                borderRadius: moderateScale(30),
-                marginBottom: verticalScale(20),
-                width: '96%',
+                display: 'flex',
+                flexDirection: 'row',
+                height: '50%',
               }}
             >
-              <Text
-                style={{
-                  fontSize: moderateScale(20),
-                  fontWeight: 800,
-                  textAlign: 'center',
-                  marginBottom: verticalScale(20),
-                }}
-              >
-                Ventas recientes por cliente
-              </Text>
-              <LineChart
-                areaChart
-                isAnimated
-                curved
-                data={sls}
-                hideRules
-                startFillColor="rgb(46, 217, 255)"
-                startOpacity={0.8}
-                endFillColor="rgb(203, 241, 250)"
-                color="darkblue"
-                dataPointsColor="darkblue"
-                endOpacity={0.3}
-                pointerConfig={{
-                  pointerColor: 'black',
-                  pointerLabelComponent: (items) => {
-                    return (
-                      <View
-                        style={{
-                          height: verticalScale(50),
-                          width: horizontalScale(70),
-                          backgroundColor: 'black',
-                          borderRadius: moderateScale(100),
-                          justifyContent: 'center',
-                          alignSelf: 'center',
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: 'lightgray',
-                            fontSize: moderateScale(12),
-                            textAlign: 'center',
-                          }}
-                        >
-                          {items[0].name}
-                        </Text>
-                        <Text
-                          style={{
-                            color: 'white',
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            fontSize: moderateScale(10),
-                          }}
-                        >
-                          ${items[0].value}
-                        </Text>
-                      </View>
-                    );
-                  },
-                }}
-              />
-            </View>
-
-            <View
-              style={{
-                marginTop: verticalScale(5),
-                backgroundColor: 'white',
-                padding: moderateScale(15),
-                borderRadius: moderateScale(30),
-                width: '96%',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: moderateScale(20),
-                  fontWeight: 800,
-                  textAlign: 'center',
-                  padding: moderateScale(10),
-                }}
-              >
-                Ventas por producto
-              </Text>
               <View
                 style={{
-                  marginTop: verticalScale(-15),
+                  flex: 1,
+                  padding: scale(3),
                 }}
               >
-                <BarChart
-                  barWidth={moderateScale(18)}
-                  barBorderRadius={4}
-                  frontColor="pink"
-                  data={custs}
-                  rotateLabel
-                  yAxisThickness={0}
-                  xAxisThickness={0}
-                  isAnimated
+                <Card
+                  title="Ganancias totales"
+                  text={'$' + totalSales}
+                  onPress={() =>
+                    navigation.navigate('Root', {
+                      screen: 'Historial',
+                      params: { screen: 'Ventas' },
+                    })
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  padding: scale(3),
+                }}
+              >
+                <Card
+                  title={'Gastos totales'}
+                  icon={'dollar'}
+                  text={'$' + totalExpenses}
+                  onPress={() =>
+                    navigation.navigate('Root', {
+                      screen: 'Historial',
+                      params: { screen: 'Gastos' },
+                    })
+                  }
                 />
               </View>
             </View>
-          </View>
-        </>
-      ) : (
-        <View
-          style={{
-            alignItems: 'center',
-            top: verticalScale(50),
-          }}
-        >
-          <Text
-            style={{
-              fontSize: moderateScale(14),
-              color: 'gray',
-              top: verticalScale(40),
-              textAlign: 'center',
-            }}
-          >
-            Una vez registrando datos, tus estadísticas apareceran aqui ;)
-          </Text>
-        </View>
-      )}
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                height: '50%',
+              }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  padding: scale(3),
+                }}
+              >
+                <Card
+                  title={'Productos en stock'}
+                  text={totalProds}
+                  onPress={() => navigation.navigate('Almacen')}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  padding: scale(3),
+                }}
+              >
+                <Card
+                  title={'Ventas totales'}
+                  text={totalProdsSales}
+                  onPress={() => navigation.navigate('Almacen')}
+                />
+              </View>
+            </View>
+          </>
+        ) : (
+          <>
+            <Text
+              style={{
+                fontSize: moderateScale(14),
+                color: 'gray',
+                top: verticalScale(40),
+                textAlign: 'center',
+              }}
+            >
+              Una vez registrando datos, tus estadísticas apareceran aqui ;)
+            </Text>
+          </>
+        )}
+      </Holder>
     </ScrollView>
   );
 }

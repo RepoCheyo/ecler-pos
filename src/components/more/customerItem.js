@@ -1,11 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React from 'react';
 import { Entypo, Feather } from '@expo/vector-icons';
-import {
-  horizontalScale,
-  verticalScale,
-  moderateScale,
-} from '../../utils/dimensions';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 export default function CustomerItem({ name, onPressTrash, onPressEdit }) {
   return (
@@ -25,8 +21,8 @@ export default function CustomerItem({ name, onPressTrash, onPressEdit }) {
     >
       <Text
         style={{
-          marginLeft: horizontalScale(15),
-          fontSize: moderateScale(16),
+          marginLeft: scale(15),
+          fontSize: scale(16),
         }}
       >
         {name}
@@ -41,7 +37,7 @@ export default function CustomerItem({ name, onPressTrash, onPressEdit }) {
         <TouchableOpacity
           onPress={onPressEdit}
           style={{
-            marginRight: horizontalScale(15),
+            marginRight: scale(15),
           }}
         >
           <Feather name="edit-2" size={24} color="gray" />

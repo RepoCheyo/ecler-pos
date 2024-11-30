@@ -8,6 +8,7 @@ import {
   moderateScale,
 } from '../../utils/dimensions';
 import * as Haptics from 'expo-haptics';
+import { scale } from 'react-native-size-matters';
 
 export default function AddButton({ btnColor, screenToNav }) {
   const navigation = useNavigation();
@@ -16,7 +17,7 @@ export default function AddButton({ btnColor, screenToNav }) {
     <TouchableOpacity
       style={{
         position: 'absolute',
-        width: horizontalScale(45),
+        width: scale(25),
         height: verticalScale(45),
         backgroundColor: btnColor,
         borderRadius: moderateScale(100),

@@ -1,12 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Entypo, Feather } from '@expo/vector-icons';
-
-import {
-  horizontalScale,
-  verticalScale,
-  moderateScale,
-} from '../../utils/dimensions';
+import { scale, verticalScale } from 'react-native-size-matters';
 
 export default function AccountItem({
   id,
@@ -22,7 +17,7 @@ export default function AccountItem({
         height: verticalScale(75),
         display: 'flex',
         flexDirection: 'row',
-        padding: moderateScale(10),
+        padding: scale(10),
         marginBottom: verticalScale(5),
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -32,8 +27,8 @@ export default function AccountItem({
     >
       <Text
         style={{
-          marginLeft: horizontalScale(15),
-          fontSize: moderateScale(16),
+          marginLeft: scale(15),
+          fontSize: scale(16),
         }}
       >
         {name}
@@ -41,8 +36,8 @@ export default function AccountItem({
 
       <Text
         style={{
-          marginLeft: horizontalScale(15),
-          fontSize: moderateScale(16),
+          marginLeft: scale(15),
+          fontSize: scale(16),
         }}
       >
         ${amount}
@@ -57,7 +52,7 @@ export default function AccountItem({
         <TouchableOpacity
           onPress={onPressEdit}
           style={{
-            marginRight: horizontalScale(15),
+            marginRight: scale(15),
           }}
         >
           <Feather name="edit-2" size={24} color="gray" />
